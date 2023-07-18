@@ -17,10 +17,14 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade setuptools
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Clean up
+      - name: Clean prep area
         run: rm -fr dist/*
       - name: Build front end
         run: cd auth0_component/frontend/ && npm run ci
