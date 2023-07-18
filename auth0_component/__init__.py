@@ -22,6 +22,9 @@ from functools import wraps
 from jose import jwt
 
 
+def to_bool(val): pass
+
+
 def getVerifiedSubFromToken(token, domain, audience, issuer):
     domain = "https://" + domain
     jsonurl = urlopen(domain + "/.well-known/jwks.json")
@@ -56,7 +59,7 @@ def getVerifiedSubFromToken(token, domain, audience, issuer):
         return payload["sub"]
 
 
-def login_button(clientId, domain, audience=None, issuer=None, key=None, debug_log=False, **kwargs):
+def login_button(clientId, domain, audience=None, issuer=None, key=None, debug_logs=False, **kwargs):
     """Create a new instance of "login_button".
     Parameters
     ----------
@@ -80,7 +83,7 @@ def login_button(clientId, domain, audience=None, issuer=None, key=None, debug_l
         domain=domain,
         audience=audience if audience else f"{domain}/api/v2/",
         issuer=issuer if issuer else f"{domain}/",
-        debug_log=debug_log,
+        debug_logs=to_bool(debug_logs),
         key=key,
         default=0
     )
@@ -104,6 +107,19 @@ def isAuth(response, domain, audience, issuer):
         == response["sub"]
     )
 
+def to_bool(val):
+    if type(val) is bool:
+        return val
+    elif type(val) is str:
+        if val.lower() == "true":
+            return True
+        if val.lower() == "false":
+            return False
+    elif type(val) is int:
+        return False if val == 0 else True
+    elif type(val) is float:
+        return False if val == 0 else True
+    raise ValueError("invalid truth value %r" % (val,))
 
 if not _RELEASE:
     import streamlit as st

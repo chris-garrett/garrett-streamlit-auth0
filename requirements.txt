@@ -1,0 +1,4 @@
+streamlit
+python-jose[cryptography]
+python-dotenv
+six
