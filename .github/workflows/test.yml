@@ -23,7 +23,7 @@ jobs:
       - name: Clean up
         run: rm -fr dist/*
       - name: Build front end
-        run: cd auth0_component/frontend/ && npm run build
+        run: cd auth0_component/frontend/ && npm run ci
       - name: Build Component
         run: python setup.py sdist bdist_wheel
       - name: Publish to Test PyPI
