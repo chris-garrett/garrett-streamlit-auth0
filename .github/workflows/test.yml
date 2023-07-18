@@ -1,3 +1,5 @@
+name: Publish to TestPyPi
+
 on: 
   workflow_dispatch:
   # push:
