@@ -19,7 +19,7 @@ jobs:
           python-version: '3.10'
       - uses: actions/setup-node@v3
         with:
-          node-version: lts
+          node-version: '18'
       - name: Clean up
         run: rm -fr dist/*
       - name: Build front end
