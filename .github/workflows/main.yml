@@ -12,12 +12,12 @@ jobs:
     name: Build and Publish to TestPyPi
     runs-on: ubuntu-latest
 
-    environment:
-      name: pypi
-      url: https://pypi.org/p/garrett-streamlit-auth0
+    # environment:
+    #   name: pypi
+    #   url: https://pypi.org/p/garrett-streamlit-auth0
 
-    permissions:
-      id-token: write
+    # permissions:
+    #   id-token: write
 
     steps:
       - uses: actions/checkout@v3
@@ -48,3 +48,5 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_TEST_API_TOKEN }}
