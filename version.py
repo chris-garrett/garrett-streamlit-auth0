@@ -1,4 +1,5 @@
 import re
+import time
 from typing import NamedTuple
 import subprocess
 
@@ -35,6 +36,18 @@ def git_version():
         commit=ret.group(4),
         hash=ret.group(5),
         branch=branch,
+    )
+
+
+# cry
+def git_version_pep440():
+    gv = git_version()
+    ts = int(time.time())
+
+    return (
+        f"{gv.major}.{gv.minor}.{gv.patch}.{gv.commit}"
+        if gv.branch == "main"
+        else f"{gv.major}.{gv.minor}.{gv.patch}.{gv.commit}.dev{ts}"
     )
 
 
