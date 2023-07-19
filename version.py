@@ -8,8 +8,16 @@ def exec(cmd, timeout=1):
 
 
 def git_version():
+    branch = (
+        exec("git rev-parse --abbrev-ref HEAD")
+        .stdout.strip()
+        .replace("/", ".")
+        .replace("-", ".")
+    )
+
     descr = exec("git describe").stdout.strip()
     ret = re.search(r"(\d+).(\d+).(\d+)-(\d+)-g([0-9a-zA-Z]+)", descr)
+
     return NamedTuple(
         "GitVersion",
         [
@@ -18,6 +26,7 @@ def git_version():
             ("patch", str),
             ("commit", str),
             ("hash", str),
+            ("branch", str),
         ],
     )(
         major=ret.group(1),
@@ -25,9 +34,15 @@ def git_version():
         patch=ret.group(3),
         commit=ret.group(4),
         hash=ret.group(5),
+        branch=branch,
     )
 
 
 def git_version_semver():
     gv = git_version()
-    return f"{gv.major}.{gv.minor}.{gv.patch}+{gv.commit}"
+
+    return (
+        f"{gv.major}.{gv.minor}.{gv.patch}+{gv.commit}"
+        if gv.branch == "main"
+        else f"{gv.major}.{gv.minor}.{gv.patch}+{gv.commit}.{gv.branch}"
+    )
