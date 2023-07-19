@@ -1,6 +1,6 @@
 name: Publish to TestPyPi
 
-on: 
+on:
   workflow_dispatch:
   # push:
   #   branches:
@@ -17,15 +17,18 @@ jobs:
     environment:
       name: pypi
       url: https://pypi.org/p/garrett-streamlit-auth0
- 
+
     permissions:
       id-token: write
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Install dependencies
         run: |
@@ -34,7 +37,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Clean prep area
         run: rm -fr dist/*
