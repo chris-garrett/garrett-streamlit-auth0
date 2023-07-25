@@ -53,6 +53,7 @@ const logout = async () => {
   button.textContent = "Login"
   button.removeEventListener('click', logout)
   button.addEventListener('click', login)
+  Streamlit.setComponentValue(null)
 }
 
 const login = async () => {
@@ -153,5 +154,3 @@ async function onRender(event) {
 
 Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, onRender)
 Streamlit.setComponentReady()
-
-
