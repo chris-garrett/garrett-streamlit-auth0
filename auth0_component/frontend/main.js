@@ -20,7 +20,18 @@ let audience
 let debug_logs
 let auth0
 
-console.log("loading")
+const getOriginUrl = () => {
+  // Detect if you're inside an iframe
+  if (window.parent !== window) {
+    const currentIframeHref = new URL(document.location.href)
+    const urlOrigin = currentIframeHref.origin
+    const urlFilePath = decodeURIComponent(currentIframeHref.pathname)
+    // Take referrer as origin
+    return urlOrigin + urlFilePath
+  } else {
+    return window.location.origin
+  }
+}
 
 const createClient = async () => {
   if (auth0) return;
@@ -58,14 +69,6 @@ const login = async () => {
 
   button.textContent = 'working...'
   await createClient();
-  // auth0 = await createAuth0Client({
-  //   domain: domain,
-  //   client_id: client_id,
-  //   redirect_uri: getOriginUrl(),
-  //   audience: audience,
-  //   useRefreshTokens: true,
-  //   cacheLocation: "localstorage",
-  // });
 
   try {
     await auth0.loginWithPopup();
@@ -127,34 +130,7 @@ const login = async () => {
   button.addEventListener('click', logout)
 }
 
-const getOriginUrl = () => {
-  // Detect if you're inside an iframe
-  if (window.parent !== window) {
-    const currentIframeHref = new URL(document.location.href)
-    const urlOrigin = currentIframeHref.origin
-    const urlFilePath = decodeURIComponent(currentIframeHref.pathname)
-    // Take referrer as origin
-    return urlOrigin + urlFilePath
-  } else {
-    return window.location.origin
-  }
-}
-
-auth0 = await createAuth0Client({
-  domain: domain,
-  client_id: client_id,
-  redirect_uri: getOriginUrl(),
-  audience: audience,
-  useRefreshTokens: true,
-  cacheLocation: "localstorage",
-});
-let authenticated = await auth0.isAuthenticated();
-console.log(">>>>0", getOriginUrl())
-console.log(">>>>1", auth0)
-console.log(">>>>2", authenticated)
-button.onclick = login
-
-function onRender(event) {
+async function onRender(event) {
   const data = event.detail
 
   client_id = data.args["client_id"]
@@ -162,6 +138,15 @@ function onRender(event) {
   audience = data.args["audience"]
   debug_logs = data.args["debug_logs"]
  
+  await createClient();
+  if (await auth0.isAuthenticated()) {
+    button.textContent = "Logout"
+    button.onclick = logout
+  } else {
+    button.textContent = "Login"
+    button.onclick = login
+  }
+
   Streamlit.setFrameHeight()
 }
 
