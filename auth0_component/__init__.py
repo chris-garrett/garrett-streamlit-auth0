@@ -1,9 +1,7 @@
 import os
 import streamlit.components.v1 as components
 
-# _RELEASE = False
-_RELEASE = True
-
+_RELEASE = False if "auth0_component_develop" in os.environ else True
 
 if not _RELEASE:
     _login_button = components.declare_component(
@@ -121,29 +119,29 @@ def to_bool(val):
         return False if val == 0 else True
     raise ValueError("invalid truth value %r" % (val,))
 
-if not _RELEASE:
-    import streamlit as st
-    from dotenv import load_dotenv
-    import os
+# if not _RELEASE:
+#     import streamlit as st
+#     from dotenv import load_dotenv
+#     import os
 
-    load_dotenv()
+#     load_dotenv()
 
-    clientId = os.environ["clientId"]
-    domain = os.environ["domain"]
-    audience = os.getenv("audience")
-    issuer = os.getenv("issuer")
-    debug_logs = os.getenv("debug_logs", False)
+#     clientId = os.environ["clientId"]
+#     domain = os.environ["domain"]
+#     audience = os.getenv("audience")
+#     issuer = os.getenv("issuer")
+#     debug_logs = os.getenv("debug_logs", False)
 
-    st.subheader("Login component")
-    user_info = login_button(
-        clientId,
-        domain=domain,
-        audience=audience,
-        issuer=issuer,
-        debug_logs=debug_logs
-    )
-    # user_info = login_button(clientId = "...", domain = "...")
-    st.write("User info")
-    st.write(user_info)
-    if st.button("rerun"):
-        st.experimental_rerun()
+#     st.subheader("Login component")
+#     user_info = login_button(
+#         clientId,
+#         domain=domain,
+#         audience=audience,
+#         issuer=issuer,
+#         debug_logs=debug_logs
+#     )
+#     # user_info = login_button(clientId = "...", domain = "...")
+#     st.write("User info")
+#     st.write(user_info)
+#     if st.button("rerun"):
+#         st.experimental_rerun()

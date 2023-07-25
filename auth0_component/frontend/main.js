@@ -20,7 +20,24 @@ let audience
 let debug_logs
 let auth0
 
+console.log("loading")
+
+const createClient = async () => {
+  if (auth0) return;
+
+  auth0 = await createAuth0Client({
+    domain: domain,
+    client_id: client_id,
+    redirect_uri: getOriginUrl(),
+    audience: audience,
+    useRefreshTokens: true,
+    cacheLocation: "localstorage",
+  });
+}
+
 const logout = async () => {
+  await createClient();
+
   auth0.logout({ returnTo: getOriginUrl() })
   button.textContent = "Login"
   button.removeEventListener('click', logout)
@@ -40,14 +57,15 @@ const login = async () => {
   }
 
   button.textContent = 'working...'
-  auth0 = await createAuth0Client({
-    domain: domain,
-    client_id: client_id,
-    redirect_uri: getOriginUrl(),
-    audience: audience,
-    useRefreshTokens: true,
-    cacheLocation: "localstorage",
-  });
+  await createClient();
+  // auth0 = await createAuth0Client({
+  //   domain: domain,
+  //   client_id: client_id,
+  //   redirect_uri: getOriginUrl(),
+  //   audience: audience,
+  //   useRefreshTokens: true,
+  //   cacheLocation: "localstorage",
+  // });
 
   try {
     await auth0.loginWithPopup();
@@ -109,23 +127,6 @@ const login = async () => {
   button.addEventListener('click', logout)
 }
 
-button.onclick = login
-
-function onRender(event) {
-  const data = event.detail
-
-  client_id = data.args["client_id"]
-  domain = data.args["domain"]
-  audience = data.args["audience"]
-  debug_logs = data.args["debug_logs"]
-
-  Streamlit.setFrameHeight()
-}
-
-
-Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, onRender)
-Streamlit.setComponentReady()
-
 const getOriginUrl = () => {
   // Detect if you're inside an iframe
   if (window.parent !== window) {
@@ -138,3 +139,34 @@ const getOriginUrl = () => {
     return window.location.origin
   }
 }
+
+auth0 = await createAuth0Client({
+  domain: domain,
+  client_id: client_id,
+  redirect_uri: getOriginUrl(),
+  audience: audience,
+  useRefreshTokens: true,
+  cacheLocation: "localstorage",
+});
+let authenticated = await auth0.isAuthenticated();
+console.log(">>>>0", getOriginUrl())
+console.log(">>>>1", auth0)
+console.log(">>>>2", authenticated)
+button.onclick = login
+
+function onRender(event) {
+  const data = event.detail
+
+  client_id = data.args["client_id"]
+  domain = data.args["domain"]
+  audience = data.args["audience"]
+  debug_logs = data.args["debug_logs"]
+ 
+  Streamlit.setFrameHeight()
+}
+
+
+Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, onRender)
+Streamlit.setComponentReady()
+
+
