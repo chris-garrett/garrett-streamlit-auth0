@@ -1,13 +1,14 @@
 import { Streamlit } from "streamlit-component-lib"
 import createAuth0Client from '@auth0/auth0-spa-js';
-import Toastify from 'toastify-js'
-import "toastify-js/src/toastify.css"
+// import Toastify from 'toastify-js'
+// import "toastify-js/src/toastify.css"
 import "./style.css"
 
 const div = document.body.appendChild(document.createElement("div"))
 const button = div.appendChild(document.createElement("button"))
 button.className = "log"
 button.textContent = "Login"
+
 
 // set flex collumn so the error message appears under the button
 div.style = "display: flex; flex-direction: column; color: rgb(104, 85, 224); font-weight: 600; margin: 0; padding: 10px"
@@ -47,13 +48,16 @@ const createClient = async () => {
 }
 
 const logout = async () => {
+
   await createClient();
 
   auth0.logout({ returnTo: getOriginUrl() })
+
+
+  Streamlit.setComponentValue(null)
   button.textContent = "Login"
   button.removeEventListener('click', logout)
   button.addEventListener('click', login)
-  Streamlit.setComponentValue(null)
 }
 
 const login = async () => {
@@ -63,8 +67,8 @@ const login = async () => {
       "Configuration:\n" +
       "  Client Id:" + client_id + "\n" +
       "  Domain:", domain + "\n" +
-      "  Audience:", audience + "\n" +
-      "  Callback urls set to: ", getOriginUrl() + "\n"
+    "  Audience:", audience + "\n" +
+    "  Callback urls set to: ", getOriginUrl() + "\n"
     );
   }
 
@@ -112,10 +116,10 @@ const login = async () => {
       });
       if (debug_logs) {
         console.log(token)
-      }      
+      }
     }
-    else { 
-      console.error(error) 
+    else {
+      console.error(error)
     }
   }
 
@@ -124,12 +128,66 @@ const login = async () => {
   if (debug_logs) {
     console.log(userCopy);
   }
-    
+
   Streamlit.setComponentValue(userCopy)
   button.textContent = "Logout"
   button.removeEventListener('click', login)
   button.addEventListener('click', logout)
 }
+
+const resume = async () => {
+  if (debug_logs) {
+    console.log(
+      "Configuration:\n" +
+      "  Client Id:" + client_id + "\n" +
+      "  Domain:", domain + "\n" +
+    "  Audience:", audience + "\n" +
+    "  Callback urls set to: ", getOriginUrl() + "\n"
+    );
+  }
+
+  button.textContent = 'working...'
+  await createClient();
+
+  const user = await auth0.getUser() || {};
+  console.log("user", user);
+  if (debug_logs) {
+    console.log(user)
+    console.log({
+      // return getAccessTokenWithPopup({
+      audience: audience,
+      scope: "read:current_user",
+    })
+  }
+
+  let token = false
+
+  try {
+
+    token = await auth0.getTokenSilently({
+      // return getAccessTokenWithPopup({
+      audience: audience,
+      scope: "read:current_user",
+    });
+
+  }
+  catch (error) {
+    console.error(error)
+  }
+
+  let userCopy = JSON.parse(JSON.stringify(user));
+  userCopy.token = token
+  if (debug_logs) {
+    console.log(userCopy);
+  }
+
+  Streamlit.setComponentValue(userCopy)
+  button.textContent = "Logout"
+  button.removeEventListener('click', login)
+  button.addEventListener('click', logout)
+}
+
+button.addEventListener('click', login)
 
 async function onRender(event) {
   const data = event.detail
@@ -138,15 +196,15 @@ async function onRender(event) {
   domain = data.args["domain"]
   audience = data.args["audience"]
   debug_logs = data.args["debug_logs"]
- 
-  await createClient();
-  if (await auth0.isAuthenticated()) {
-    button.textContent = "Logout"
-    button.onclick = logout
-  } else {
-    button.textContent = "Login"
-    button.onclick = login
+
+  if (!window.auth0_component_rendered) {
+    await createClient();
+    if (await auth0.isAuthenticated()) {
+      await resume();
+    }
+    window.auth0_component_rendered = true;
   }
+
 
   Streamlit.setFrameHeight()
 }
