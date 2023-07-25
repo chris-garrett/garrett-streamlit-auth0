@@ -13,3 +13,4 @@ auth = login_button(
 )
 if auth:
     st.write(auth)
+    st.balloons()

@@ -13,3 +13,4 @@ auth = login_button(
 )
 if auth:
     st.write(auth)
+    st.metric(label="Temp", value="273 K", delta="1.2 K")

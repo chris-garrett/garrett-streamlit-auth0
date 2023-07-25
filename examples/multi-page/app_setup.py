@@ -1,7 +1,6 @@
 import os
 import sys
 from dotenv import load_dotenv
-from pprint import pprint
 
 sys.path.append(
     os.path.abspath(
@@ -12,5 +11,5 @@ sys.path.append(
         )
     )
 )
-pprint(sys.path)
+
 load_dotenv()
