@@ -1,3 +1,6 @@
 [browser]
 # disable telemetry
 gatherUsageStats = false
+
+[server]
+runOnSave = true
