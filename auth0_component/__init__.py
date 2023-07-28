@@ -1,6 +1,7 @@
 import os
 import streamlit.components.v1 as components
 
+
 _RELEASE = False if "auth0_component_develop" in os.environ else True
 
 if not _RELEASE:
@@ -109,7 +110,8 @@ def isAuth(response, domain, audience, issuer):
         == response["sub"]
     )
 
-def to_bool(val):
+
+def to_bool(val):  # noqa F811
     if type(val) is bool:
         return val
     elif type(val) is str:
