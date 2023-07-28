@@ -50,3 +50,12 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Tag main
+        if: github.ref == 'refs/heads/main'
+        run: /
+          NEW_TAG=`python setup.py --version`
+          git config user.name 'Tag Bot'
+          git config user.email 'garrett-streamlit-auth0@users.noreply.github.com'
+          git tag -a ${NEW_TAG} -m "${NEW_TAG}" -f
+          git push origin ${NEW_TAG}
