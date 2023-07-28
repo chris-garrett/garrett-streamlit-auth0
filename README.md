@@ -11,11 +11,11 @@
 
 - Register for Auth0
 - Create a Single Page Application and navigate to the "settings" tab 
-- set your callback url's to `http://localhost:8501/component/auth0_component.login_button/index.html` assuming you're running on localhost or `http://YOUR_DOMAIN/component/auth0_component.login_button/index.html` if you're deploying
+- Set your callback url's to `http://localhost:8501/component/auth0_component.login_button/index.html` assuming you're running on localhost or `http://YOUR_DOMAIN/component/auth0_component.login_button/index.html` if you're deploying
 - Copy `client_id` and `domain` from this page
 - Follow example below
 
-## An example
+## Basic example
 On Auth0 website start a "Single Page Web Application" and copy your client-id / domain (of form xxxx.us.auth0.com) into code below.
 
 ```
@@ -31,11 +31,34 @@ st.write(user_info)
 
 `user_info` will now contain your user's information 
 
+## Customized domain example
+
+If you are using a custom domain and passing in your own values for audience and issuer you can now specify those. 
+
+```
+from auth0_component import login_button
+import streamlit as st
+
+clientId = "...."
+domain = "...."
+audience = "...."
+issuer = "...."
+
+user_info = login_button(
+    clientId, 
+    domain = domain,
+    audience = audience,
+    issuer = issuer,
+)
+st.write(user_info)
+```
+
+
 
 ## Todo
 
-- Pass all info through JWT, at the moment the `sub` field is the only field assing through verification
-- Test with other providers, only Google tested 
+- Pass all info through JWT, at the moment the `sub` field is the only field passing through verification
+- Test with other providers, Google + Azure AD tested 
 
 
 
