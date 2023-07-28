@@ -59,3 +59,12 @@ jobs:
           git config user.email 'garrett-streamlit-auth0@users.noreply.github.com'
           git tag -a ${NEW_TAG} -m "${NEW_TAG}" -f
           git push origin ${NEW_TAG}
+
+      - name: Add Version to PR
+        run: |
+          NEW_TAG=`python setup.py --version`
+          curl -X POST \
+            ${{ github.event.pull_request.comments_url }} \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            --data "Version: ${NEW_TAG}"
