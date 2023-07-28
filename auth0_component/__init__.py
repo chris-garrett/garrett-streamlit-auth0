@@ -76,12 +76,16 @@ def login_button(clientId, domain, audience=None, issuer=None, key=None, debug_l
         User info
     """
 
+    audience = audience if audience else f"https://{domain}/api/v2/"
+    issuer = issuer if issuer else f"https://{domain}/"
+    debug_logs = to_bool(debug_logs)
+
     user_info = _login_button(
         client_id=clientId,
         domain=domain,
-        audience=audience if audience else f"{domain}/api/v2/",
-        issuer=issuer if issuer else f"{domain}/",
-        debug_logs=to_bool(debug_logs),
+        audience=audience,
+        issuer=issuer,
+        debug_logs=debug_logs,
         key=key,
         default=0
     )
