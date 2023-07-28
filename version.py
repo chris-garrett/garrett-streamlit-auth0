@@ -58,6 +58,6 @@ def get_next_version():
     gv = git_version()
     return (
         f"{gv.major}.{gv.minor + 1}"
-        if gv.branch != "main"
+        if gv.branch == "main"
         else f"{gv.major}.{gv.minor}.dev{int(time.time())}"
     )
