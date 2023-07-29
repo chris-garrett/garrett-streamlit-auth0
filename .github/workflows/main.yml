@@ -62,6 +62,7 @@ jobs:
           git push origin ${NEW_TAG}
 
       - name: Add Version to PR
+        if: github.event_name == 'pull_request'
         run: |
           set -e
           NEW_TAG=`python setup.py --version`
