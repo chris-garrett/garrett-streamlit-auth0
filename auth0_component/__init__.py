@@ -1,6 +1,7 @@
 import os
 import streamlit.components.v1 as components
 
+
 _RELEASE = False if "auth0_component_develop" in os.environ else True
 
 if not _RELEASE:
@@ -76,12 +77,16 @@ def login_button(clientId, domain, audience=None, issuer=None, key=None, debug_l
         User info
     """
 
+    audience = audience if audience else f"https://{domain}/api/v2/"
+    issuer = issuer if issuer else f"https://{domain}/"
+    debug_logs = to_bool(debug_logs)
+
     user_info = _login_button(
         client_id=clientId,
         domain=domain,
-        audience=audience if audience else f"{domain}/api/v2/",
-        issuer=issuer if issuer else f"{domain}/",
-        debug_logs=to_bool(debug_logs),
+        audience=audience,
+        issuer=issuer,
+        debug_logs=debug_logs,
         key=key,
         default=0
     )
@@ -105,7 +110,8 @@ def isAuth(response, domain, audience, issuer):
         == response["sub"]
     )
 
-def to_bool(val):
+
+def to_bool(val):  # noqa F811
     if type(val) is bool:
         return val
     elif type(val) is str:
@@ -118,30 +124,3 @@ def to_bool(val):
     elif type(val) is float:
         return False if val == 0 else True
     raise ValueError("invalid truth value %r" % (val,))
-
-# if not _RELEASE:
-#     import streamlit as st
-#     from dotenv import load_dotenv
-#     import os
-
-#     load_dotenv()
-
-#     clientId = os.environ["clientId"]
-#     domain = os.environ["domain"]
-#     audience = os.getenv("audience")
-#     issuer = os.getenv("issuer")
-#     debug_logs = os.getenv("debug_logs", False)
-
-#     st.subheader("Login component")
-#     user_info = login_button(
-#         clientId,
-#         domain=domain,
-#         audience=audience,
-#         issuer=issuer,
-#         debug_logs=debug_logs
-#     )
-#     # user_info = login_button(clientId = "...", domain = "...")
-#     st.write("User info")
-#     st.write(user_info)
-#     if st.button("rerun"):
-#         st.experimental_rerun()

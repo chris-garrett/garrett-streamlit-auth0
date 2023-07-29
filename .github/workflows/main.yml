@@ -18,8 +18,7 @@ jobs:
       name: pypi
       url: https://pypi.org/p/garrett-streamlit-auth0
 
-    permissions:
-      id-token: write
+    permissions: write-all
 
     steps:
       - uses: actions/checkout@v3
@@ -50,3 +49,27 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Tag main
+        if: github.ref == 'refs/heads/main'
+        run: /
+          set -e
+          NEW_TAG=`python setup.py --version`
+          git config user.name 'Tag Bot'
+          git config user.email 'garrett-streamlit-auth0@users.noreply.github.com'
+          git tag -a ${NEW_TAG} -m "${NEW_TAG}" -f $GITHUB_SHA
+          git push origin ${NEW_TAG}
+
+      - name: Add Version to PR
+        if: github.event_name == 'pull_request'
+        run: |
+          set -e
+          NEW_TAG=`python setup.py --version`
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            ${{ github.event.pull_request.comments_url }} \
+            -d '{"body":"'"Version: ${NEW_TAG}"'"}'
+

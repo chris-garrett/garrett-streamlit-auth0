@@ -1,10 +1,10 @@
 import setuptools
-from version import git_version_pep440
+from version import get_next_version
 
 
 setuptools.setup(
     name="garrett-streamlit-auth0",
-    version=git_version_pep440(),
+    version=get_next_version(),
     author="",
     author_email="",
     description="",

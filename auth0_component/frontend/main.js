@@ -1,7 +1,5 @@
 import { Streamlit } from "streamlit-component-lib"
 import createAuth0Client from '@auth0/auth0-spa-js';
-// import Toastify from 'toastify-js'
-// import "toastify-js/src/toastify.css"
 import "./style.css"
 
 const div = document.body.appendChild(document.createElement("div"))

@@ -1,3 +1,11 @@
+#
+# To simplify versioning I'm going to do the following:
+# * Every merge to main:  bump the minor version
+# * There will be no "patches".
+# * Major version bumps will be a manual commit + tag to main
+# main   == 1.0, 1.1...
+# cg/foo == 1.0.dev<timestamp>
+#
 import re
 import time
 from typing import NamedTuple
@@ -17,45 +25,39 @@ def git_version():
     )
 
     descr = exec("git describe").stdout.strip()
-    ret = re.search(r"(\d+).(\d+).(\d+)-(\d+)-g([0-9a-zA-Z]+)", descr)
+    ret = re.search(r"(\d+).(\d+)-(\d+)-g([0-9a-zA-Z]+)", descr)
 
     return NamedTuple(
         "GitVersion",
         [
-            ("major", str),
-            ("minor", str),
-            ("patch", str),
-            ("commit", str),
+            ("major", int),
+            ("minor", int),
+            ("commit", int),
             ("hash", str),
             ("branch", str),
         ],
     )(
-        major=ret.group(1),
-        minor=ret.group(2),
-        patch=ret.group(3),
-        commit=ret.group(4),
-        hash=ret.group(5),
+        major=int(ret.group(1)),
+        minor=int(ret.group(2)),
+        commit=int(ret.group(3)),
+        hash=ret.group(4),
         branch=branch,
     )
 
 
-# cry
-def git_version_pep440():
+def get_version():
     gv = git_version()
-    ts = int(time.time())
-
     return (
-        f"{gv.major}.{gv.minor}.{gv.patch}.{gv.commit}"
+        f"{gv.major}.{gv.minor}"
         if gv.branch == "main"
-        else f"{gv.major}.{gv.minor}.{gv.patch}.{gv.commit}.dev{ts}"
+        else f"{gv.major}.{gv.minor}.dev{int(time.time())}"
     )
 
 
-def git_version_semver():
+def get_next_version():
     gv = git_version()
-
     return (
-        f"{gv.major}.{gv.minor}.{gv.patch}+{gv.commit}"
+        f"{gv.major}.{gv.minor + 1}"
         if gv.branch == "main"
-        else f"{gv.major}.{gv.minor}.{gv.patch}+{gv.commit}.{gv.branch}"
+        else f"{gv.major}.{gv.minor}.dev{int(time.time())}"
     )
