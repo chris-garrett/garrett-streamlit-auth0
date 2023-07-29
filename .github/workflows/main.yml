@@ -52,7 +52,7 @@ jobs:
 
       - name: Tag main
         if: github.ref == 'refs/heads/main'
-        run: /
+        run: |
           set -e
           NEW_TAG=`python setup.py --version`
           git config user.name 'Tag Bot'
