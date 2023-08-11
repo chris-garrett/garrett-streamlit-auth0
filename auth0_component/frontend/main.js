@@ -118,6 +118,9 @@ const login = async () => {
     }
     else {
       console.error(error)
+      Streamlit.setComponentValue(null)
+      button.textContent = "Login"
+      return
     }
   }
 
@@ -171,6 +174,9 @@ const resume = async () => {
   }
   catch (error) {
     console.error(error)
+    Streamlit.setComponentValue(null)
+    button.textContent = "Login"
+    return
   }
 
   let userCopy = JSON.parse(JSON.stringify(user));
