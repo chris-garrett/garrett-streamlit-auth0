@@ -1,5 +1,5 @@
-import app_setup  # noqa
 import os
+import time
 import streamlit as st
 from auth0_component import login_button
 
@@ -20,3 +20,6 @@ except Exception as e:
 if auth:
     st.write(auth)
     st.metric(label="Temp", value="273 K", delta="1.2 K")
+    btn = st.button("click me")
+    if btn:
+        st.session_state["clicked"] = time.time()
