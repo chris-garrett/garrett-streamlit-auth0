@@ -7,7 +7,6 @@ const button = div.appendChild(document.createElement("button"))
 button.className = "log"
 button.textContent = "Login"
 
-
 // set flex collumn so the error message appears under the button
 div.style = "display: flex; flex-direction: column; color: rgb(104, 85, 224); font-weight: 600; margin: 0; padding: 10px"
 const errorNode = div.appendChild(document.createTextNode(""))
@@ -190,18 +189,26 @@ async function onRender(event) {
   audience = data.args["audience"]
   debug_logs = data.args["debug_logs"]
 
-  if (!window.auth0_component_rendered) {
+  if (!auth0) { // first time or page refreshed
     await createClient();
-    if (await auth0.isAuthenticated()) {
+    if (await auth0.isAuthenticated()) { // page refreshed
       await resume();
     }
-    window.auth0_component_rendered = true;
-  }
+  } else {
+    // streamlit rerendered
+    if (!await auth0.isAuthenticated()) { // sig expired
 
+        button.removeEventListener('click', login);
+        button.removeEventListener('click', logout);
+
+        button.textContent = "Login"
+        button.addEventListener('click', login)
+
+    }
+  }
 
   Streamlit.setFrameHeight()
 }
-
 
 Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, onRender)
 Streamlit.setComponentReady()
