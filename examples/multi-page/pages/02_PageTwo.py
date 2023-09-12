@@ -14,9 +14,13 @@ try:
         debug_logs=os.getenv("debug_logs"),
     )
 except Exception as e:
-    st.write(f"Auth failed {type(e)} {e}")
+    if "Signature has expired" in str(e):
+        st.warning("Your session expired. Please login again.")    
+    else:
+        st.warning(f"Auth failed {type(e)} {e}")
     auth = None
 
 if auth:
     st.write(auth)
     st.balloons()
+    st.checkbox('Pinapple on pizza is ok', key="dont_hate_me")
