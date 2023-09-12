@@ -21,7 +21,7 @@ except jwt.JWTClaimsError as e:
     st.warning(f"There was an issue with your claims: {e}")
     auth = None
 except Exception as e:
-    st.warning(f"An unknow error occurred when authenticating: {e}")
+    st.warning(f"An unknown error occurred when authenticating: {e}")
     auth = None
 
 if auth:
