@@ -62,11 +62,12 @@ const login = async () => {
 
   if (debug_logs) {
     console.log(
+      "Starting session\n" +
       "Configuration:\n" +
       "  Client Id:" + client_id + "\n" +
       "  Domain:", domain + "\n" +
-    "  Audience:", audience + "\n" +
-    "  Callback urls set to: ", getOriginUrl() + "\n"
+      "  Audience:", audience + "\n" +
+      "  Callback urls set to: ", getOriginUrl() + "\n"
     );
   }
 
@@ -85,12 +86,7 @@ const login = async () => {
   const user = await auth0.getUser();
 
   if (debug_logs) {
-    console.log(user)
-    console.log({
-      // return getAccessTokenWithPopup({
-      audience: audience,
-      scope: "read:current_user",
-    })
+    console.log("user:", user)
   }
 
   let token = false
@@ -98,7 +94,6 @@ const login = async () => {
   try {
 
     token = await auth0.getTokenSilently({
-      // return getAccessTokenWithPopup({
       audience: audience,
       scope: "read:current_user",
     });
@@ -113,7 +108,7 @@ const login = async () => {
         scope: "read:current_user",
       });
       if (debug_logs) {
-        console.log(token)
+        console.log("token:", token)
       }
     }
     else {
@@ -127,7 +122,7 @@ const login = async () => {
   let userCopy = JSON.parse(JSON.stringify(user));
   userCopy.token = token
   if (debug_logs) {
-    console.log(userCopy);
+    console.log("user:", userCopy);
   }
 
   Streamlit.setComponentValue(userCopy)
@@ -139,6 +134,7 @@ const login = async () => {
 const resume = async () => {
   if (debug_logs) {
     console.log(
+      "Resuming session\n" +
       "Configuration:\n" +
       "  Client Id:" + client_id + "\n" +
       "  Domain:", domain + "\n" +
@@ -151,22 +147,15 @@ const resume = async () => {
   await createClient();
 
   const user = await auth0.getUser() || {};
-  console.log("user", user);
+  
   if (debug_logs) {
-    console.log(user)
-    console.log({
-      // return getAccessTokenWithPopup({
-      audience: audience,
-      scope: "read:current_user",
-    })
+    console.log("user", user);
   }
 
   let token = false
 
   try {
-
     token = await auth0.getTokenSilently({
-      // return getAccessTokenWithPopup({
       audience: audience,
       scope: "read:current_user",
     });
@@ -182,7 +171,7 @@ const resume = async () => {
   let userCopy = JSON.parse(JSON.stringify(user));
   userCopy.token = token
   if (debug_logs) {
-    console.log(userCopy);
+    console.log("user:", userCopy);
   }
 
   Streamlit.setComponentValue(userCopy)
