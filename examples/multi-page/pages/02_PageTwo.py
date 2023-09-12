@@ -1,5 +1,6 @@
 import app_setup  # noqa
 import os
+from jose import jwt
 import streamlit as st
 from auth0_component import login_button
 
@@ -13,11 +14,13 @@ try:
         issuer=os.getenv("issuer"),
         debug_logs=os.getenv("debug_logs"),
     )
+except jwt.ExpiredSignatureError:
+    st.warning("Your session expired. Please login again.")
+except jwt.JWTClaimsError as e:
+    st.warning(f"THere was an issue with your claims: {e}")
 except Exception as e:
-    if "Signature has expired" in str(e):
-        st.warning("Your session expired. Please login again.")    
-    else:
-        st.warning(f"Auth failed {type(e)} {e}")
+    st.warning(f"An unknow error occurred when authenticating: {e}")
+finally:
     auth = None
 
 if auth:
