@@ -6,6 +6,7 @@
 # main   == 1.0, 1.1...
 # cg/foo == 1.0.dev<timestamp>
 #
+import os
 import re
 import time
 from typing import NamedTuple
@@ -13,7 +14,13 @@ import subprocess
 
 
 def exec(cmd, timeout=1):
-    return subprocess.run(cmd.split(), capture_output=True, text=True, timeout=timeout)
+    return subprocess.run(
+        cmd.split(), 
+        capture_output=True, 
+        text=True, 
+        timeout=timeout, 
+        cwd=os.path.dirname(os.path.realpath(__file__))
+    )
 
 
 def git_version():
@@ -23,8 +30,7 @@ def git_version():
         .replace("/", ".")
         .replace("-", ".")
     )
-
-    descr = exec("git describe").stdout.strip()
+    descr = exec("git describe --long").stdout.strip()
     ret = re.search(r"(\d+).(\d+)-(\d+)-g([0-9a-zA-Z]+)", descr)
 
     return NamedTuple(

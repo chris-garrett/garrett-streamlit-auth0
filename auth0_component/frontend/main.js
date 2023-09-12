@@ -7,7 +7,6 @@ const button = div.appendChild(document.createElement("button"))
 button.className = "log"
 button.textContent = "Login"
 
-
 // set flex collumn so the error message appears under the button
 div.style = "display: flex; flex-direction: column; color: rgb(104, 85, 224); font-weight: 600; margin: 0; padding: 10px"
 const errorNode = div.appendChild(document.createTextNode(""))
@@ -62,11 +61,12 @@ const login = async () => {
 
   if (debug_logs) {
     console.log(
+      "Starting session\n" +
       "Configuration:\n" +
       "  Client Id:" + client_id + "\n" +
       "  Domain:", domain + "\n" +
-    "  Audience:", audience + "\n" +
-    "  Callback urls set to: ", getOriginUrl() + "\n"
+      "  Audience:", audience + "\n" +
+      "  Callback urls set to: ", getOriginUrl() + "\n"
     );
   }
 
@@ -85,12 +85,7 @@ const login = async () => {
   const user = await auth0.getUser();
 
   if (debug_logs) {
-    console.log(user)
-    console.log({
-      // return getAccessTokenWithPopup({
-      audience: audience,
-      scope: "read:current_user",
-    })
+    console.log("user:", user)
   }
 
   let token = false
@@ -98,7 +93,6 @@ const login = async () => {
   try {
 
     token = await auth0.getTokenSilently({
-      // return getAccessTokenWithPopup({
       audience: audience,
       scope: "read:current_user",
     });
@@ -113,7 +107,7 @@ const login = async () => {
         scope: "read:current_user",
       });
       if (debug_logs) {
-        console.log(token)
+        console.log("token:", token)
       }
     }
     else {
@@ -127,7 +121,7 @@ const login = async () => {
   let userCopy = JSON.parse(JSON.stringify(user));
   userCopy.token = token
   if (debug_logs) {
-    console.log(userCopy);
+    console.log("user:", userCopy);
   }
 
   Streamlit.setComponentValue(userCopy)
@@ -139,6 +133,7 @@ const login = async () => {
 const resume = async () => {
   if (debug_logs) {
     console.log(
+      "Resuming session\n" +
       "Configuration:\n" +
       "  Client Id:" + client_id + "\n" +
       "  Domain:", domain + "\n" +
@@ -151,22 +146,15 @@ const resume = async () => {
   await createClient();
 
   const user = await auth0.getUser() || {};
-  console.log("user", user);
+  
   if (debug_logs) {
-    console.log(user)
-    console.log({
-      // return getAccessTokenWithPopup({
-      audience: audience,
-      scope: "read:current_user",
-    })
+    console.log("user", user);
   }
 
   let token = false
 
   try {
-
     token = await auth0.getTokenSilently({
-      // return getAccessTokenWithPopup({
       audience: audience,
       scope: "read:current_user",
     });
@@ -182,7 +170,7 @@ const resume = async () => {
   let userCopy = JSON.parse(JSON.stringify(user));
   userCopy.token = token
   if (debug_logs) {
-    console.log(userCopy);
+    console.log("user:", userCopy);
   }
 
   Streamlit.setComponentValue(userCopy)
@@ -201,18 +189,26 @@ async function onRender(event) {
   audience = data.args["audience"]
   debug_logs = data.args["debug_logs"]
 
-  if (!window.auth0_component_rendered) {
+  if (!auth0) { // first time or page refreshed
     await createClient();
-    if (await auth0.isAuthenticated()) {
+    if (await auth0.isAuthenticated()) { // page refreshed
       await resume();
     }
-    window.auth0_component_rendered = true;
-  }
+  } else {
+    // streamlit rerendered
+    if (!await auth0.isAuthenticated()) { // sig expired
 
+        button.removeEventListener('click', login);
+        button.removeEventListener('click', logout);
+
+        button.textContent = "Login"
+        button.addEventListener('click', login)
+
+    }
+  }
 
   Streamlit.setFrameHeight()
 }
-
 
 Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, onRender)
 Streamlit.setComponentReady()

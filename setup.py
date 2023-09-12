@@ -21,5 +21,6 @@ setuptools.setup(
         # them here.
         "streamlit >= 0.63",
         "python-jose == 3.3.0",
+        "six"
     ],
 )
