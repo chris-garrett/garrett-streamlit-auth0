@@ -16,11 +16,12 @@ try:
     )
 except jwt.ExpiredSignatureError:
     st.warning("Your session expired. Please login again.")
+    auth = None
 except jwt.JWTClaimsError as e:
-    st.warning(f"THere was an issue with your claims: {e}")
+    st.warning(f"There was an issue with your claims: {e}")
+    auth = None
 except Exception as e:
     st.warning(f"An unknow error occurred when authenticating: {e}")
-finally:
     auth = None
 
 if auth:
